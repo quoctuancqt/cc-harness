@@ -69,7 +69,8 @@ instead of improvising:
    Core/EF Core/CQRS specifics → `dotnet-csharp`; any git operation → `git-cli`
 5. **Testing** — unit/integration tests per the Testing section above;
    expanding coverage → `testing-strategy`; before opening a PR →
-   `code-review`
+   `open-code-review-delegate` (Claude reviews the diff itself; the `ocr`
+   CLI only selects files and resolves rules — no OCR LLM key needed)
 6. **Deployment** — see the Deployment section below; before merging to
    main or cutting a release → `deploy-checklist`
 7. **Maintenance & Support** — production bug / "works on staging not prod"

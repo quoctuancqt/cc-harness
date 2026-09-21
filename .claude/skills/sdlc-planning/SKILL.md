@@ -8,7 +8,7 @@ description: Run the Planning and Analysis phases of the software development cy
 Covers phases 1 (Planning) and 2 (Analysis) of the software development
 cycle. Design, Implementation, Testing & Integration, and Maintenance are
 covered by the `architecture`/`system-design`, `dev-workflow`,
-`testing-strategy`/`code-review`, and `debug`/`incident-response`/
+`testing-strategy`/`open-code-review-delegate`, and `debug`/`incident-response`/
 `deploy-checklist`/`tech-debt`/`documentation` skills respectively — see the
 Software Development Cycle section of `CLAUDE.md`.
 
