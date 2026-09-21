@@ -97,3 +97,14 @@ After copying, update `CLAUDE.md`'s project name, EF Core provider (Postgres/SQL
 Server/etc.) and any project-specific commands, then scaffold the solution to
 match the `src/Domain`, `src/Application`, `src/Infrastructure`,
 `src/Presentation`, `tests/` layout it describes.
+
+### Auto memory
+
+Separate from `CLAUDE.md`, Claude Code has a built-in **auto memory** system:
+Claude writes its own notes — your corrections, preferences, and in-flight
+project context it can't derive from the code — to a per-repo, machine-local
+folder (`~/.claude/projects/<project>/memory/`), and reads them back in future
+sessions. It's on by default and needs no setup; nothing in this template
+configures it. Use `/memory` in a session to view, edit, or toggle it. To
+disable it for a project, add `"autoMemoryEnabled": false` to
+`.claude/settings.json`.
