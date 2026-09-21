@@ -32,6 +32,15 @@ Copy these into the root of a new or existing solution:
   `dotnet-csharp`, `git-cli`, `testing-strategy`, `open-code-review-delegate`,
   `deploy-checklist`, `debug`, `incident-response`, `tech-debt`,
   `documentation`, `standup`, `typesafe-ai`
+- `.mcp.json` — registers the `context7` MCP server (hosted, no secrets
+  required) so Claude can pull current, version-specific docs/examples for
+  any library instead of relying on training-data memory of its API. Useful
+  whenever a task touches EF Core 10, MediatR, FluentValidation, or another
+  fast-moving NuGet package — ask for it explicitly with "use context7", or
+  add an optional API key from
+  [context7.com/dashboard](https://context7.com/dashboard) for a higher rate
+  limit (`claude mcp add --transport http context7 https://mcp.context7.com/mcp --header "Authorization: Bearer <key>"`,
+  or add a `"headers"` block to `.mcp.json` directly).
 - `global.json` — pins the .NET SDK to the 10.x feature band
 - `Directory.Build.props` — shared build settings (nullable, analyzers, warnings-as-errors)
 - `.editorconfig` — C# formatting and naming conventions
