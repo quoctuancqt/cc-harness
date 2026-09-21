@@ -10,7 +10,21 @@ Copy these into the root of a new or existing solution:
 - `CLAUDE.md` — persona, stack, architecture, rules, a Software Development
   Life Cycle map telling Claude which skill to use at each of the 7 phases,
   and a Deployment section (container build, migrations, health checks)
-- `.claude/settings.json` — pre-approved `dotnet`/`git`/`gh` (read-only) commands
+- `.claude/settings.json` — pre-approved `dotnet`/`git`/`gh` (read-only) commands,
+  plus hooks (below)
+- `.claude/hooks/` — three Python hooks wired from `.claude/settings.json`:
+  - `format_csharp.py` (PostToolUse on Edit/Write) — runs `dotnet format
+    --include <file>` on any `.cs` file Claude just touched, walking up to the
+    nearest `global.json` to find the solution root. Silent, best-effort,
+    never blocks.
+  - `guard_layering.py` (PreToolUse on Edit/Write) — blocks (exit 2) an edit
+    under `src/Domain` or `src/Application` whose content references
+    `Infrastructure`/`Presentation`, enforcing the "dependencies point inward
+    only" rule from CLAUDE.md's Important Rules. Text-heuristic, not a real
+    analyzer — can false-positive on a comment that merely mentions the word.
+  - `guard_secrets.py` (PreToolUse on Read/Edit/Write) — blocks Claude from
+    reading or writing `.env*` files or `appsettings.*Production*.json`, so
+    production secrets never enter the conversation.
 - `.claude/skills/` — all 13 skills the harness relies on, vendored locally so
   the template is self-contained (works even without the `engineering`
   plugin or org-synced skills installed on the account that opens it):
