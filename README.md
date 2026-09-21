@@ -5,14 +5,40 @@ Architecture, DDD and CQRS on the latest LTS runtime (.NET 10).
 
 ## Usage
 
-Copy these into the root of a new or existing solution:
+This repo is both a **plugin marketplace** (skills, hooks, MCP config — installed
+once, shared by the whole team) and a **project template** (`CLAUDE.md` and a
+handful of solution-level files — copied per-project and adapted). Do both.
 
-- `CLAUDE.md` — persona, stack, architecture, rules, a Software Development
-  Life Cycle map telling Claude which skill to use at each of the 7 phases,
-  and a Deployment section (container build, migrations, health checks)
-- `.claude/settings.json` — pre-approved `dotnet`/`git`/`gh` (read-only) commands,
-  plus hooks (below)
-- `.claude/hooks/` — three Python hooks wired from `.claude/settings.json`:
+```text
+cc-harness/
+├── .claude-plugin/marketplace.json   # marketplace manifest (step 1)
+├── plugins/dotnet-harness/           # the plugin itself (step 1)
+│   ├── .claude-plugin/plugin.json
+│   ├── skills/, hooks/, .mcp.json
+├── CLAUDE.md                         # project template (step 2)
+└── .editorconfig, global.json, Directory.Build.props
+```
+
+### 1. Install the plugin (skills, hooks, MCP)
+
+```shell
+/plugin marketplace add quoctuancqt/cc-harness
+/plugin install dotnet-harness@cc-harness
+```
+
+Anyone on the team runs these two commands once per machine — no cloning, no
+manual file copying, and updates land with `/plugin marketplace update` +
+`/plugin update dotnet-harness@cc-harness` instead of re-syncing files by hand.
+This installs everything under [plugins/dotnet-harness/](plugins/dotnet-harness/):
+
+- **`skills/`** — all 13 skills the harness relies on, vendored locally so
+  the plugin is self-contained (works even without the `engineering` plugin
+  or org-synced skills installed on the account that opens it):
+  `sdlc-planning` (project-authored), `architecture`, `system-design`,
+  `dotnet-csharp`, `git-cli`, `testing-strategy`, `open-code-review-delegate`,
+  `deploy-checklist`, `debug`, `incident-response`, `tech-debt`,
+  `documentation`, `standup`, `typesafe-ai`
+- **`hooks/`** — three Python hooks wired from `hooks/hooks.json`:
   - `format_csharp.py` (PostToolUse on Edit/Write) — runs `dotnet format
     --include <file>` on any `.cs` file Claude just touched, walking up to the
     nearest `global.json` to find the solution root. Silent, best-effort,
@@ -25,22 +51,28 @@ Copy these into the root of a new or existing solution:
   - `guard_secrets.py` (PreToolUse on Read/Edit/Write) — blocks Claude from
     reading or writing `.env*` files or `appsettings.*Production*.json`, so
     production secrets never enter the conversation.
-- `.claude/skills/` — all 13 skills the harness relies on, vendored locally so
-  the template is self-contained (works even without the `engineering`
-  plugin or org-synced skills installed on the account that opens it):
-  `sdlc-planning` (project-authored), `architecture`, `system-design`,
-  `dotnet-csharp`, `git-cli`, `testing-strategy`, `open-code-review-delegate`,
-  `deploy-checklist`, `debug`, `incident-response`, `tech-debt`,
-  `documentation`, `standup`, `typesafe-ai`
-- `.mcp.json` — registers the `context7` MCP server (hosted, no secrets
+- **`.mcp.json`** — registers the `context7` MCP server (hosted, no secrets
   required) so Claude can pull current, version-specific docs/examples for
   any library instead of relying on training-data memory of its API. Useful
   whenever a task touches EF Core 10, MediatR, FluentValidation, or another
   fast-moving NuGet package — ask for it explicitly with "use context7", or
   add an optional API key from
   [context7.com/dashboard](https://context7.com/dashboard) for a higher rate
-  limit (`claude mcp add --transport http context7 https://mcp.context7.com/mcp --header "Authorization: Bearer <key>"`,
-  or add a `"headers"` block to `.mcp.json` directly).
+  limit (add a `"headers"` block to `plugins/dotnet-harness/.mcp.json` in a
+  fork, or set one per-user via `claude mcp add --transport http context7
+  https://mcp.context7.com/mcp --header "Authorization: Bearer <key>"`).
+
+A plugin can't ship `CLAUDE.md` (project instructions), so that — and a few
+solution-level files — still need a one-time copy per repo (step 2).
+
+### 2. Copy the project template files
+
+Copy these into the root of a new or existing solution:
+
+- `CLAUDE.md` — persona, stack, architecture, rules, a Software Development
+  Life Cycle map telling Claude which skill to use at each of the 7 phases,
+  and a Deployment section (container build, migrations, health checks)
+- `.claude/settings.json` — pre-approved `dotnet`/`git`/`gh` (read-only) commands
 - `global.json` — pins the .NET SDK to the 10.x feature band
 - `Directory.Build.props` — shared build settings (nullable, analyzers, warnings-as-errors)
 - `.editorconfig` — C# formatting and naming conventions
@@ -74,8 +106,9 @@ which doesn't match this .NET 10, backend-only template.
 
 `open-code-review-delegate` is vendored verbatim from
 [alibaba/open-code-review](https://github.com/alibaba/open-code-review)
-(Apache-2.0), file `skills/open-code-review-delegate/SKILL.md`, as of
-2026-09-21. It runs OCR's **Delegation Mode**: the `ocr` CLI only does
+(Apache-2.0), file
+[plugins/dotnet-harness/skills/open-code-review-delegate/SKILL.md](plugins/dotnet-harness/skills/open-code-review-delegate/SKILL.md),
+as of 2026-09-21. It runs OCR's **Delegation Mode**: the `ocr` CLI only does
 deterministic file selection and rule resolution (`ocr delegate preview`,
 `ocr delegate rule <files>`); Claude performs the actual review itself using
 its own reasoning, so no OCR LLM endpoint or API key is configured. Requires
@@ -84,7 +117,8 @@ the `ocr` CLI (`npm install -g @alibaba-group/open-code-review`) and Git
 
 `typesafe-ai` is vendored verbatim from
 [typesafe-ai/skills](https://github.com/typesafe-ai/skills) (MIT), file
-`skills/typesafe-ai/SKILL.md`, as of 2026-09-21, per the
+[plugins/dotnet-harness/skills/typesafe-ai/SKILL.md](plugins/dotnet-harness/skills/typesafe-ai/SKILL.md),
+as of 2026-09-21, per the
 [quickstart guide](https://docs.typesafe.ai/introduction/quickstart#vibe-it-the-agent-skill).
 It points Claude at TypeSafe's live docs (`docs.typesafe.ai`) to build
 features on TypeSafe's System One models (e.g. Jev) — typed judgments like

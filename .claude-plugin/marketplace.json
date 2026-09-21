@@ -1,0 +1,13 @@
+{
+  "name": "cc-harness",
+  "owner": {
+    "name": "Tuan Cao"
+  },
+  "plugins": [
+    {
+      "name": "dotnet-harness",
+      "source": "./plugins/dotnet-harness",
+      "description": "Skills, hooks, and MCP config for a Senior .NET Developer working with Clean Architecture, DDD, and CQRS on .NET 10."
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "dotnet-harness",
+  "displayName": ".NET Solution Harness",
+  "version": "1.0.0",
+  "description": "Skills, hooks, and MCP config for a Senior .NET Developer working with Clean Architecture, DDD, and CQRS on .NET 10.",
+  "author": {
+    "name": "Tuan Cao"
+  },
+  "repository": "https://github.com/quoctuancqt/cc-harness",
+  "keywords": ["dotnet", "csharp", "clean-architecture", "ddd", "cqrs"],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
+}
