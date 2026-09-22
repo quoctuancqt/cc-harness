@@ -104,6 +104,15 @@ originals get updated. The Mantu-specific `dev-workflow` skill was
 deliberately **not** vendored — it targets .NET 8 + a Vue 3/Quasar frontend,
 which doesn't match this .NET 10, backend-only template.
 
+Five of those (`architecture`, `debug`, `deploy-checklist`,
+`incident-response`, `standup`) reference `~~category` placeholders (e.g.
+`~~source control`, `~~monitoring`) for external tools, resolved by
+[plugins/dotnet-harness/CONNECTORS.md](plugins/dotnet-harness/CONNECTORS.md).
+Unlike the upstream `engineering` plugin, this template doesn't pre-configure
+any of those connectors — only `context7` is wired up (see below) — so connect
+one per category yourself if you want that functionality; otherwise the skill
+just asks you directly instead.
+
 `open-code-review-delegate` is vendored verbatim from
 [alibaba/open-code-review](https://github.com/alibaba/open-code-review)
 (Apache-2.0), file
